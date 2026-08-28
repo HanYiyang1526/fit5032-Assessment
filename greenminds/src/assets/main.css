@@ -1,0 +1,45 @@
+:root {
+  --gm-green: #3b6d11;
+  --gm-green-dark: #27500a;
+  --gm-cream: #f7f6f0;
+}
+
+body {
+  background-color: var(--gm-cream);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: var(--gm-green-dark) !important;
+}
+
+.btn-gm-primary {
+  background-color: var(--gm-green);
+  border-color: var(--gm-green);
+  color: #fff;
+}
+
+.btn-gm-primary:hover {
+  background-color: var(--gm-green-dark);
+  border-color: var(--gm-green-dark);
+  color: #fff;
+}
+
+.hero-section {
+  background-color: var(--gm-green);
+  color: #fff;
+  padding: 4rem 1rem;
+}
+
+.resource-card {
+  height: 100%;
+  transition: transform 0.15s ease-in-out;
+}
+
+.resource-card:hover {
+  transform: translateY(-4px);
+}
+
+.badge-audience {
+  background-color: var(--gm-green);
+}
