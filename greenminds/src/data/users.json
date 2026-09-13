@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "username": "sarah.teacher",
+    "displayName": "Sarah Mitchell",
+    "role": "Teacher",
+    "seedPassword": "Teacher123"
+  },
+  {
+    "id": 2,
+    "username": "priya.volunteer",
+    "displayName": "Priya Anand",
+    "role": "Volunteer",
+    "seedPassword": "Volunteer123"
+  }
+]
