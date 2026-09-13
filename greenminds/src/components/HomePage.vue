@@ -1,23 +1,59 @@
 <script setup>
+defineProps({
+  currentUser: {
+    type: Object,
+    default: null
+  }
+})
 defineEmits(['navigate'])
 </script>
 
 <template>
   <section class="hero-section text-center">
     <div class="container">
-      <h1 class="display-5 fw-bold">Climate education for every community</h1>
-      <p class="lead mt-3">
-        GreenMinds Australia helps teachers, families, and young volunteers
-        build climate literacy through accessible resources, workshops, and
-        hands-on community action.
-      </p>
-      <a
-        href="#"
-        class="btn btn-light btn-lg mt-2"
-        @click.prevent="$emit('navigate', 'resources')"
-      >
-        Browse Resources
-      </a>
+      <template v-if="currentUser && currentUser.role === 'Teacher'">
+        <h1 class="display-5 fw-bold">Welcome back, {{ currentUser.displayName }}</h1>
+        <p class="lead mt-3">
+          Jump back into curriculum-aligned lesson plans and classroom-ready
+          resources picked for teachers.
+        </p>
+        <a
+          href="#"
+          class="btn btn-light btn-lg mt-2"
+          @click.prevent="$emit('navigate', 'resources')"
+        >
+          Browse Teacher Resources
+        </a>
+      </template>
+      <template v-else-if="currentUser && currentUser.role === 'Volunteer'">
+        <h1 class="display-5 fw-bold">Welcome back, {{ currentUser.displayName }}</h1>
+        <p class="lead mt-3">
+          Thanks for being part of the GreenMinds community — see what's new
+          and rate the resources you've used.
+        </p>
+        <a
+          href="#"
+          class="btn btn-light btn-lg mt-2"
+          @click.prevent="$emit('navigate', 'resources')"
+        >
+          View Volunteer Opportunities
+        </a>
+      </template>
+      <template v-else>
+        <h1 class="display-5 fw-bold">Climate education for every community</h1>
+        <p class="lead mt-3">
+          GreenMinds Australia helps teachers, families, and young volunteers
+          build climate literacy through accessible resources, workshops, and
+          hands-on community action.
+        </p>
+        <a
+          href="#"
+          class="btn btn-light btn-lg mt-2"
+          @click.prevent="$emit('navigate', 'resources')"
+        >
+          Browse Resources
+        </a>
+      </template>
     </div>
   </section>
 
