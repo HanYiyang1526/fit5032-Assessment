@@ -6,6 +6,7 @@ import ResourcesPage from './components/ResourcesPage.vue'
 import ContactPage from './components/ContactPage.vue'
 import LoginPage from './components/LoginPage.vue'
 import DirectoryPage from './components/DirectoryPage.vue'
+import MapPage from './components/MapPage.vue'
 import { currentUser, initAuth } from './composables/useAuth.js'
 import DebugDemo from './components/debug-demo/DebugDemo.vue'
 
@@ -35,6 +36,7 @@ function navigate(page) {
   />
   <ResourcesPage v-else-if="currentPage === 'resources'" />
   <DirectoryPage v-else-if="currentPage === 'directory'" />
+  <MapPage v-else-if="currentPage === 'map'" />
   <ContactPage v-else-if="currentPage === 'contact'" />
   <LoginPage v-else-if="currentPage === 'login'" @navigate="navigate" />
 

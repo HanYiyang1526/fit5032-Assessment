@@ -18,6 +18,7 @@ const navItems = [
   { key: 'home', label: 'Home' },
   { key: 'resources', label: 'Educational Resources' },
   { key: 'directory', label: 'Events & Schools' },
+  { key: 'map', label: 'Event Map' },
   { key: 'contact', label: 'Contact / Newsletter' }
 ]
 
