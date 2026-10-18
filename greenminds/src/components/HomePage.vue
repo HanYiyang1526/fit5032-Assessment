@@ -62,7 +62,7 @@ defineEmits(['navigate'])
       <div class="col-12 col-md-4">
         <div class="card h-100 border-0 shadow-sm">
           <div class="card-body">
-            <h5 class="card-title">For Teachers</h5>
+            <h2 class="h5 card-title">For Teachers</h2>
             <p class="card-text">
               Curriculum-aligned lesson plans and classroom-ready resources
               you can use with minimal preparation.
@@ -73,7 +73,7 @@ defineEmits(['navigate'])
       <div class="col-12 col-md-4">
         <div class="card h-100 border-0 shadow-sm">
           <div class="card-body">
-            <h5 class="card-title">For Families</h5>
+            <h2 class="h5 card-title">For Families</h2>
             <p class="card-text">
               Practical, family-friendly activities and guides to build
               climate awareness at home and outdoors.
@@ -84,7 +84,7 @@ defineEmits(['navigate'])
       <div class="col-12 col-md-4">
         <div class="card h-100 border-0 shadow-sm">
           <div class="card-body">
-            <h5 class="card-title">For Volunteers</h5>
+            <h2 class="h5 card-title">For Volunteers</h2>
             <p class="card-text">
               Meaningful, well-defined volunteering opportunities to build
               experience and connect with the community.

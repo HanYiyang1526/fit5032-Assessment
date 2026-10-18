@@ -33,7 +33,7 @@ async function handleLogout() {
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top" aria-label="Main">
     <div class="container">
       <a class="navbar-brand" href="#" @click.prevent="go('home')">
         GreenMinds Australia
@@ -55,6 +55,7 @@ async function handleLogout() {
             <a
               class="nav-link"
               :class="{ active: currentPage === item.key }"
+              :aria-current="currentPage === item.key ? 'page' : undefined"
               href="#"
               @click.prevent="go(item.key)"
             >
@@ -65,6 +66,7 @@ async function handleLogout() {
             <a
               class="nav-link"
               :class="{ active: currentPage === 'login' }"
+              :aria-current="currentPage === 'login' ? 'page' : undefined"
               href="#"
               @click.prevent="go('login')"
             >

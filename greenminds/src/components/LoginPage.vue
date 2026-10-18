@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { login, register } from '../composables/useAuth.js'
+import { focusFirstInvalid } from '../utils/a11y.js'
 
 const emit = defineEmits(['navigate'])
 
@@ -70,9 +71,12 @@ function validateRegister() {
 
 const registerFailure = ref('')
 
-async function handleRegister() {
+async function handleRegister(event) {
   registerFailure.value = ''
-  if (!validateRegister()) return
+  if (!validateRegister()) {
+    focusFirstInvalid(event.target)
+    return
+  }
 
   try {
     await register({
@@ -90,6 +94,7 @@ async function handleRegister() {
 
 <template>
   <section class="container my-5" style="max-width: 480px;">
+    <h1 class="h3 mb-3 text-center">{{ mode === 'login' ? 'Log in' : 'Create an account' }}</h1>
     <div class="card border-0 shadow-sm">
       <div class="card-body p-4">
         <ul class="nav nav-tabs mb-4">
@@ -97,6 +102,7 @@ async function handleRegister() {
             <a
               class="nav-link"
               :class="{ active: mode === 'login' }"
+              :aria-current="mode === 'login' ? 'true' : undefined"
               href="#"
               @click.prevent="mode = 'login'"
             >
@@ -107,6 +113,7 @@ async function handleRegister() {
             <a
               class="nav-link"
               :class="{ active: mode === 'register' }"
+              :aria-current="mode === 'register' ? 'true' : undefined"
               href="#"
               @click.prevent="mode = 'register'"
             >
@@ -116,7 +123,7 @@ async function handleRegister() {
         </ul>
 
         <form v-if="mode === 'login'" novalidate @submit.prevent="handleLogin">
-          <div class="alert alert-danger py-2" v-if="loginError">{{ loginError }}</div>
+          <div class="alert alert-danger py-2" role="alert" v-if="loginError">{{ loginError }}</div>
           <div class="mb-3">
             <label for="login-email" class="form-label">Email</label>
             <input
@@ -141,7 +148,7 @@ async function handleRegister() {
         </form>
 
         <form v-else novalidate @submit.prevent="handleRegister">
-          <div class="alert alert-danger py-2" v-if="registerFailure">
+          <div class="alert alert-danger py-2" role="alert" v-if="registerFailure">
             {{ registerFailure }}
           </div>
 
@@ -154,55 +161,74 @@ async function handleRegister() {
               autocomplete="email"
               class="form-control"
               :class="{ 'is-invalid': registerErrors.email }"
+              aria-required="true"
+              :aria-invalid="!!registerErrors.email"
+              aria-describedby="register-email-error"
             />
-            <div class="invalid-feedback" v-if="registerErrors.email">
+            <div id="register-email-error" class="invalid-feedback" v-if="registerErrors.email">
               {{ registerErrors.email }}
             </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Full name</label>
+            <label for="register-name" class="form-label">Full name</label>
             <input
+              id="register-name"
               v-model="registerForm.displayName"
               type="text"
+              autocomplete="name"
               class="form-control"
               :class="{ 'is-invalid': registerErrors.displayName }"
+              aria-required="true"
+              :aria-invalid="!!registerErrors.displayName"
+              aria-describedby="register-name-error"
             />
-            <div class="invalid-feedback" v-if="registerErrors.displayName">
+            <div id="register-name-error" class="invalid-feedback" v-if="registerErrors.displayName">
               {{ registerErrors.displayName }}
             </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label">I am a...</label>
-            <select v-model="registerForm.role" class="form-select">
+            <label for="register-role" class="form-label">I am a...</label>
+            <select id="register-role" v-model="registerForm.role" class="form-select">
               <option value="Teacher">Teacher</option>
               <option value="Volunteer">Volunteer</option>
             </select>
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Password</label>
+            <label for="register-password" class="form-label">Password</label>
             <input
+              id="register-password"
               v-model="registerForm.password"
               type="password"
+              autocomplete="new-password"
               class="form-control"
               :class="{ 'is-invalid': registerErrors.password }"
+              aria-required="true"
+              :aria-invalid="!!registerErrors.password"
+              aria-describedby="register-password-hint register-password-error"
             />
-            <div class="invalid-feedback" v-if="registerErrors.password">
+            <div id="register-password-hint" class="form-text">At least 6 characters.</div>
+            <div id="register-password-error" class="invalid-feedback" v-if="registerErrors.password">
               {{ registerErrors.password }}
             </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Confirm password</label>
+            <label for="register-confirm" class="form-label">Confirm password</label>
             <input
+              id="register-confirm"
               v-model="registerForm.confirmPassword"
               type="password"
+              autocomplete="new-password"
               class="form-control"
               :class="{ 'is-invalid': registerErrors.confirmPassword }"
+              aria-required="true"
+              :aria-invalid="!!registerErrors.confirmPassword"
+              aria-describedby="register-confirm-error"
             />
-            <div class="invalid-feedback" v-if="registerErrors.confirmPassword">
+            <div id="register-confirm-error" class="invalid-feedback" v-if="registerErrors.confirmPassword">
               {{ registerErrors.confirmPassword }}
             </div>
           </div>

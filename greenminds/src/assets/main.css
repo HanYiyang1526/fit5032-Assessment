@@ -43,3 +43,74 @@ body {
 .badge-audience {
   background-color: var(--gm-green);
 }
+
+/* BR (E.3) Accessibility -------------------------------------------- */
+
+/* Skip link: hidden until it receives keyboard focus. */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 2000;
+  padding: 0.5rem 1rem;
+  background: var(--gm-green-dark);
+  color: #fff;
+  border-radius: 0 0 0.375rem 0.375rem;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 0;
+  color: #fff;
+}
+
+/* A clear, high-contrast focus ring for keyboard users. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+/* <main> receives focus programmatically on page change; no ring needed. */
+main:focus {
+  outline: none;
+}
+
+/* Rating stars (buttons) */
+.star-rating {
+  background: none;
+  border: 0;
+  padding: 0 0.1rem;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #8a8f94;
+  cursor: pointer;
+}
+
+.star-rating.filled {
+  color: #b45309;
+}
+
+/* Respect the user's reduced-motion setting. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .resource-card:hover {
+    transform: none;
+  }
+}
+
+/* Links inside the map attribution must be distinguishable without colour. */
+.leaflet-control-attribution a {
+  text-decoration: underline;
+}

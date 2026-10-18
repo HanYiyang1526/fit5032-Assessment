@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import { focusFirstInvalid } from '../utils/a11y.js'
 
 const form = reactive({
   name: '',
@@ -51,26 +52,28 @@ function validate() {
   return isValid
 }
 
-function handleSubmit() {
+function handleSubmit(event) {
   submitted.value = false
-  if (validate()) {
-    submitted.value = true
-    form.name = ''
-    form.email = ''
-    form.message = ''
+  if (!validate()) {
+    focusFirstInvalid(event.target)
+    return
   }
+  submitted.value = true
+  form.name = ''
+  form.email = ''
+  form.message = ''
 }
 </script>
 
 <template>
   <section class="container my-5" style="max-width: 640px;">
-    <h2 class="mb-3">Contact Us / Newsletter Sign-up</h2>
+    <h1 class="h2 mb-3">Contact Us / Newsletter Sign-up</h1>
     <p class="text-muted">
       Have a question, or want to stay updated on upcoming workshops? Send
       us a message below.
     </p>
 
-    <div v-if="submitted" class="alert alert-success" role="alert">
+    <div v-if="submitted" class="alert alert-success" role="status">
       Thanks for reaching out — we'll be in touch soon.
     </div>
 
@@ -83,8 +86,11 @@ function handleSubmit() {
           type="text"
           class="form-control"
           :class="{ 'is-invalid': errors.name }"
+          aria-required="true"
+          :aria-invalid="!!errors.name"
+          aria-describedby="name-error"
         />
-        <div class="invalid-feedback" v-if="errors.name">{{ errors.name }}</div>
+        <div id="name-error" class="invalid-feedback" v-if="errors.name">{{ errors.name }}</div>
       </div>
 
       <div class="mb-3">
@@ -95,8 +101,11 @@ function handleSubmit() {
           type="email"
           class="form-control"
           :class="{ 'is-invalid': errors.email }"
+          aria-required="true"
+          :aria-invalid="!!errors.email"
+          aria-describedby="email-error"
         />
-        <div class="invalid-feedback" v-if="errors.email">{{ errors.email }}</div>
+        <div id="email-error" class="invalid-feedback" v-if="errors.email">{{ errors.email }}</div>
       </div>
 
       <div class="mb-3">
@@ -107,8 +116,11 @@ function handleSubmit() {
           class="form-control"
           rows="4"
           :class="{ 'is-invalid': errors.message }"
+          aria-required="true"
+          :aria-invalid="!!errors.message"
+          aria-describedby="message-error"
         ></textarea>
-        <div class="invalid-feedback" v-if="errors.message">
+        <div id="message-error" class="invalid-feedback" v-if="errors.message">
           {{ errors.message }}
         </div>
       </div>

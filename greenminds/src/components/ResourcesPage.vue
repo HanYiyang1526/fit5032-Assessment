@@ -88,6 +88,10 @@ function myRating(resourceId) {
   return ratingsFor(resourceId).find((r) => r.userId === currentUser.value.id) || null
 }
 
+function shownStars(resourceId) {
+  return draftStars[resourceId] || (myRating(resourceId) ? myRating(resourceId).stars : 0)
+}
+
 function setDraftStars(resourceId, stars) {
   draftStars[resourceId] = stars
 }
@@ -134,7 +138,7 @@ const savedResources = computed(() =>
 
 <template>
   <section class="container my-5">
-    <h2 class="mb-3">Educational Resources</h2>
+    <h1 class="h2 mb-3">Educational Resources</h1>
     <p class="text-muted">
       Browse curriculum-aligned lesson plans, family activities, and
       volunteer guides. Data below is loaded dynamically from a JSON
@@ -176,7 +180,7 @@ const savedResources = computed(() =>
             <span class="badge badge-audience mb-2 align-self-start">
               {{ resource.audience }}
             </span>
-            <h5 class="card-title">{{ resource.title }}</h5>
+            <h2 class="h5 card-title">{{ resource.title }}</h2>
             <p class="card-text text-muted mb-1">
               Topic: {{ resource.topic }}
             </p>
@@ -185,7 +189,7 @@ const savedResources = computed(() =>
             <!-- BR (C.3) Rating: aggregated average score -->
             <div class="mb-2">
               <span v-if="averageRating(resource.id)">
-                ⭐ {{ averageRating(resource.id) }} / 5
+                <span aria-hidden="true">⭐</span> {{ averageRating(resource.id) }} / 5
                 <span class="text-muted small">
                   ({{ ratingsFor(resource.id).length }} rating{{ ratingsFor(resource.id).length === 1 ? '' : 's' }})
                 </span>
@@ -194,24 +198,34 @@ const savedResources = computed(() =>
             </div>
 
             <div class="mb-3" v-if="currentUser">
-              <div>
-                <span
+              <!-- BR (E.3) Stars are real buttons so they work with the
+                   keyboard, and each announces its value and state. -->
+              <div role="group" :aria-label="`Your rating for ${resource.title}`">
+                <button
                   v-for="n in 5"
                   :key="n"
+                  type="button"
                   class="star-rating"
-                  :class="{ filled: n <= (draftStars[resource.id] || (myRating(resource.id) ? myRating(resource.id).stars : 0)) }"
+                  :class="{ filled: n <= shownStars(resource.id) }"
+                  :aria-label="`${n} star${n === 1 ? '' : 's'}`"
+                  :aria-pressed="n === shownStars(resource.id)"
                   @click="setDraftStars(resource.id, n)"
                 >
-                  &#9733;
-                </span>
+                  <span aria-hidden="true">&#9733;</span>
+                </button>
               </div>
+              <label :for="`comment-${resource.id}`" class="visually-hidden">
+                Comment on {{ resource.title }} (optional)
+              </label>
               <input
+                :id="`comment-${resource.id}`"
                 v-model="draftComment[resource.id]"
                 type="text"
                 class="form-control form-control-sm mt-1"
                 placeholder="Optional comment"
               />
               <button
+                type="button"
                 class="btn btn-sm btn-outline-primary mt-1"
                 @click="submitRating(resource.id)"
               >
@@ -223,6 +237,7 @@ const savedResources = computed(() =>
             </p>
 
             <button
+              type="button"
               class="btn btn-sm mt-auto"
               :class="isSaved(resource.id) ? 'btn-gm-primary' : 'btn-outline-secondary'"
               @click="toggleSave(resource.id)"
@@ -239,7 +254,7 @@ const savedResources = computed(() =>
     </div>
 
     <div v-if="savedResources.length > 0" class="mt-5">
-      <h3 class="h5">My saved resources</h3>
+      <h2 class="h5">My saved resources</h2>
       <ul class="list-group">
         <li
           class="list-group-item d-flex justify-content-between align-items-center"
@@ -248,6 +263,7 @@ const savedResources = computed(() =>
         >
           {{ resource.title }}
           <button
+            type="button"
             class="btn btn-sm btn-outline-danger"
             @click="toggleSave(resource.id)"
           >

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import NavBar from './components/NavBar.vue'
 import HomePage from './components/HomePage.vue'
 import ResourcesPage from './components/ResourcesPage.vue'
@@ -11,34 +11,53 @@ import { currentUser, initAuth } from './composables/useAuth.js'
 import DebugDemo from './components/debug-demo/DebugDemo.vue'
 
 const currentPage = ref('home')
+const mainEl = ref(null)
+
+const PAGE_TITLES = {
+  home: 'Home',
+  resources: 'Educational Resources',
+  directory: 'Events & Schools',
+  map: 'Event Map',
+  contact: 'Contact',
+  login: 'Login / Register'
+}
 
 onMounted(() => {
   initAuth()
 })
 
-function navigate(page) {
+// BR (E.3) Accessibility: on each in-app page change, update the document
+// title and move keyboard/screen-reader focus to the new page content.
+async function navigate(page) {
   currentPage.value = page
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  document.title = `${PAGE_TITLES[page]} | GreenMinds Australia`
+  window.scrollTo({ top: 0 })
+  await nextTick()
+  mainEl.value?.focus({ preventScroll: true })
 }
 </script>
 
 <template>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
   <NavBar
     :current-page="currentPage"
     :current-user="currentUser"
     @navigate="navigate"
   />
 
-  <HomePage
-    v-if="currentPage === 'home'"
-    :current-user="currentUser"
-    @navigate="navigate"
-  />
-  <ResourcesPage v-else-if="currentPage === 'resources'" />
-  <DirectoryPage v-else-if="currentPage === 'directory'" />
-  <MapPage v-else-if="currentPage === 'map'" />
-  <ContactPage v-else-if="currentPage === 'contact'" />
-  <LoginPage v-else-if="currentPage === 'login'" @navigate="navigate" />
+  <main id="main-content" ref="mainEl" tabindex="-1">
+    <HomePage
+      v-if="currentPage === 'home'"
+      :current-user="currentUser"
+      @navigate="navigate"
+    />
+    <ResourcesPage v-else-if="currentPage === 'resources'" />
+    <DirectoryPage v-else-if="currentPage === 'directory'" />
+    <MapPage v-else-if="currentPage === 'map'" />
+    <ContactPage v-else-if="currentPage === 'contact'" />
+    <LoginPage v-else-if="currentPage === 'login'" @navigate="navigate" />
+  </main>
 
   <footer class="bg-white border-top py-4 mt-5">
     <div class="container text-center text-muted small">

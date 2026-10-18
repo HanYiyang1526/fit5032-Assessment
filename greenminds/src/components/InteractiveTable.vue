@@ -98,12 +98,13 @@ async function emailCsv() {
     size="small"
     table-style="min-width: 52rem"
     :aria-label="caption"
+    :pt="{ pcPaginator: { paginatorContainer: { 'aria-label': `${caption} pages` } } }"
     class="gm-table"
     @value-change="(value) => (visibleRows = value)"
   >
     <template #header>
       <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
-        <h3 class="h6 mb-0">{{ caption }}</h3>
+        <h2 class="h6 mb-0">{{ caption }}</h2>
         <div class="d-flex flex-wrap gap-2">
           <label :for="`${tableId}-global`" class="visually-hidden">
             Search all columns of {{ caption }}
