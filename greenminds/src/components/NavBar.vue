@@ -17,6 +17,7 @@ const emit = defineEmits(['navigate'])
 const navItems = [
   { key: 'home', label: 'Home' },
   { key: 'resources', label: 'Educational Resources' },
+  { key: 'directory', label: 'Events & Schools' },
   { key: 'contact', label: 'Contact / Newsletter' }
 ]
 
