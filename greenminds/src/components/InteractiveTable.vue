@@ -4,6 +4,9 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
 import { FilterMatchMode } from '@primevue/core/api'
+import { currentUser } from '../composables/useAuth.js'
+import { apiPost } from '../services/api.js'
+import { toBase64, toCsv } from '../utils/csv.js'
 
 // BR (D.3) Interactive table data: every table built from this component
 // supports column sorting, a global search, a search box per column, and
@@ -14,7 +17,9 @@ const props = defineProps({
   rows: { type: Array, required: true },
   // [{ field, header }]
   columns: { type: Array, required: true },
-  dataKey: { type: String, default: 'id' }
+  dataKey: { type: String, default: 'id' },
+  // Base name for exported files, e.g. 'greenminds-events'
+  exportName: { type: String, required: true }
 })
 
 function buildFilters() {
@@ -31,14 +36,36 @@ function clearFilters() {
   filters.value = buildFilters()
 }
 
-// Exposed so a parent can export exactly what the user is looking at.
-const table = ref(null)
-defineExpose({ table })
+// The rows currently shown after search and sort (all pages), so exports
+// match what the user is looking at.
+const visibleRows = ref(props.rows)
+
+// BR (D.2) Email the current table view to the logged-in user as a CSV
+// attachment, via the /api/send-email serverless function (BR E.1).
+const emailStatus = ref({ type: '', text: '' })
+const sending = ref(false)
+
+async function emailCsv() {
+  sending.value = true
+  emailStatus.value = { type: '', text: '' }
+  try {
+    const csv = toCsv(visibleRows.value, props.columns)
+    const result = await apiPost('/api/send-email', {
+      subject: `GreenMinds: ${props.caption}`,
+      message: `Attached are the ${visibleRows.value.length} records you requested from "${props.caption}".`,
+      attachment: { filename: `${props.exportName}.csv`, content: toBase64(csv) }
+    })
+    emailStatus.value = { type: 'success', text: `Sent to ${result.sentTo}.` }
+  } catch (err) {
+    emailStatus.value = { type: 'danger', text: err.message }
+  } finally {
+    sending.value = false
+  }
+}
 </script>
 
 <template>
   <DataTable
-    ref="table"
     v-model:filters="filters"
     :value="rows"
     :data-key="dataKey"
@@ -52,6 +79,7 @@ defineExpose({ table })
     table-style="min-width: 52rem"
     :aria-label="caption"
     class="gm-table"
+    @value-change="(value) => (visibleRows = value)"
   >
     <template #header>
       <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
@@ -69,7 +97,24 @@ defineExpose({ table })
           <button type="button" class="btn btn-sm btn-outline-secondary" @click="clearFilters">
             Clear
           </button>
+          <button
+            v-if="currentUser"
+            type="button"
+            class="btn btn-sm btn-gm-primary"
+            :disabled="sending"
+            @click="emailCsv"
+          >
+            {{ sending ? 'Sending…' : 'Email me as CSV' }}
+          </button>
         </div>
+      </div>
+      <div
+        class="small mt-2"
+        :class="emailStatus.type ? `text-${emailStatus.type}` : ''"
+        role="status"
+        aria-live="polite"
+      >
+        {{ emailStatus.text }}
       </div>
     </template>
 

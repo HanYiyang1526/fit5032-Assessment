@@ -36,6 +36,7 @@ const schoolColumns = [
       <div class="card-body">
         <InteractiveTable
           table-id="events"
+          export-name="greenminds-events"
           caption="Upcoming volunteer events"
           :rows="events"
           :columns="eventColumns"
@@ -47,6 +48,7 @@ const schoolColumns = [
       <div class="card-body">
         <InteractiveTable
           table-id="schools"
+          export-name="greenminds-schools"
           caption="Partner schools"
           :rows="schools"
           :columns="schoolColumns"

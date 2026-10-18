@@ -1,0 +1,6 @@
+# Copy to .dev.vars for local `npm run dev:api`; set the same values in
+# Cloudflare Pages > Settings > Variables and Secrets for production.
+FIREBASE_PROJECT_ID=greenminds-52458
+BREVO_API_KEY=
+MAIL_FROM_EMAIL=
+MAIL_FROM_NAME=GreenMinds Australia
