@@ -20,8 +20,12 @@ const props = defineProps({
   columns: { type: Array, required: true },
   dataKey: { type: String, default: 'id' },
   // Base name for exported files, e.g. 'greenminds-events'
-  exportName: { type: String, required: true }
+  exportName: { type: String, required: true },
+  // Adds a checkbox column; selected rows are bound with v-model:selection
+  selectable: { type: Boolean, default: false }
 })
+
+const selection = defineModel('selection', { type: Array, default: () => [] })
 
 function buildFilters() {
   const filters = { global: { value: null, matchMode: FilterMatchMode.CONTAINS } }
@@ -102,6 +106,8 @@ async function emailCsv() {
     v-model:filters="filters"
     :value="rows"
     :data-key="dataKey"
+    :selection="selectable ? selection : undefined"
+    @update:selection="(rows) => (selection = rows)"
     :global-filter-fields="columns.map((c) => c.field)"
     filter-display="row"
     paginator
@@ -164,6 +170,7 @@ async function emailCsv() {
 
     <template #empty>No records match your search.</template>
 
+    <Column v-if="selectable" selection-mode="multiple" header-style="width: 3rem" />
     <Column
       v-for="col in columns"
       :key="col.field"

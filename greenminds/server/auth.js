@@ -9,13 +9,18 @@ const FIREBASE_JWKS = createRemoteJWKSet(
 // BR (E.1, C.4) Server-side check that the caller is a signed-in user:
 // verifies the Firebase ID token sent as "Authorization: Bearer <token>"
 // and returns its claims (uid in `sub`, plus `email`), or null.
-export async function verifyFirebaseUser(request, env) {
+export function getBearerToken(request) {
   const header = request.headers.get('Authorization') || ''
   const match = header.match(/^Bearer (.+)$/)
-  if (!match) return null
+  return match ? match[1] : null
+}
+
+export async function verifyFirebaseUser(request, env) {
+  const token = getBearerToken(request)
+  if (!token) return null
 
   try {
-    const { payload } = await jwtVerify(match[1], FIREBASE_JWKS, {
+    const { payload } = await jwtVerify(token, FIREBASE_JWKS, {
       issuer: `https://securetoken.google.com/${env.FIREBASE_PROJECT_ID}`,
       audience: env.FIREBASE_PROJECT_ID
     })

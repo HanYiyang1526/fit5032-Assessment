@@ -11,6 +11,7 @@ import {
   Tooltip
 } from 'chart.js'
 import InteractiveTable from './InteractiveTable.vue'
+import BulkEmailPanel from './BulkEmailPanel.vue'
 import { useUsers } from '../composables/useUsers.js'
 import events from '../data/events.json'
 import schools from '../data/schools.json'
@@ -117,6 +118,9 @@ const signupChartOptions = {
   scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
 }
 
+// Users ticked in the table become the bulk email recipients.
+const selectedUsers = ref([])
+
 const userColumns = [
   { field: 'displayName', header: 'Name' },
   { field: 'email', header: 'Email' },
@@ -210,16 +214,25 @@ const userColumns = [
         </div>
       </div>
 
-      <div class="card border-0 shadow-sm mb-5">
-        <div class="card-body">
-          <InteractiveTable
-            ref="usersTable"
-            table-id="users"
-            export-name="greenminds-users"
-            caption="All users"
-            :rows="users"
-            :columns="userColumns"
-          />
+      <div class="row g-4 mb-5">
+        <div class="col-xl-8">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <InteractiveTable
+                ref="usersTable"
+                v-model:selection="selectedUsers"
+                table-id="users"
+                export-name="greenminds-users"
+                caption="All users"
+                :rows="users"
+                :columns="userColumns"
+                selectable
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4">
+          <BulkEmailPanel :recipients="selectedUsers" @sent="selectedUsers = []" />
         </div>
       </div>
 
