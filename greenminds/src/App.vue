@@ -6,6 +6,7 @@ import ResourcesPage from './components/ResourcesPage.vue'
 import ContactPage from './components/ContactPage.vue'
 import LoginPage from './components/LoginPage.vue'
 import { currentUser, initAuth } from './composables/useAuth.js'
+import DebugDemo from './components/debug-demo/DebugDemo.vue'
 
 const currentPage = ref('home')
 
