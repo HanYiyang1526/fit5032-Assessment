@@ -24,8 +24,8 @@ function go(page) {
   emit('navigate', page)
 }
 
-function handleLogout() {
-  logout()
+async function handleLogout() {
+  await logout()
   emit('navigate', 'home')
 }
 </script>

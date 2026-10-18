@@ -6,18 +6,20 @@ const emit = defineEmits(['navigate'])
 
 const mode = ref('login') // 'login' | 'register'
 
-const loginForm = reactive({ username: '', password: '' })
+const loginForm = reactive({ email: '', password: '' })
 const registerForm = reactive({
-  username: '',
+  email: '',
   displayName: '',
   password: '',
   confirmPassword: '',
   role: 'Teacher'
 })
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 const loginError = ref('')
 const registerErrors = reactive({
-  username: '',
+  email: '',
   displayName: '',
   password: '',
   confirmPassword: ''
@@ -25,12 +27,12 @@ const registerErrors = reactive({
 
 async function handleLogin() {
   loginError.value = ''
-  if (!loginForm.username.trim() || !loginForm.password) {
-    loginError.value = 'Please enter both a username and password.'
+  if (!loginForm.email.trim() || !loginForm.password) {
+    loginError.value = 'Please enter both an email and password.'
     return
   }
   try {
-    await login({ username: loginForm.username, password: loginForm.password })
+    await login({ email: loginForm.email.trim(), password: loginForm.password })
     emit('navigate', 'home')
   } catch (err) {
     loginError.value = err.message
@@ -38,17 +40,17 @@ async function handleLogin() {
 }
 
 // BR (C.4) client-side validation on the registration form: required
-// fields, a minimum username length, and a password confirmation match
+// fields, a well-formed email, and a password confirmation match
 // check are all validated before any data is sent to the auth logic.
 function validateRegister() {
-  registerErrors.username = ''
+  registerErrors.email = ''
   registerErrors.displayName = ''
   registerErrors.password = ''
   registerErrors.confirmPassword = ''
   let valid = true
 
-  if (!registerForm.username.trim() || registerForm.username.trim().length < 4) {
-    registerErrors.username = 'Username must be at least 4 characters.'
+  if (!EMAIL_PATTERN.test(registerForm.email.trim())) {
+    registerErrors.email = 'Please enter a valid email address.'
     valid = false
   }
   if (!registerForm.displayName.trim()) {
@@ -74,7 +76,7 @@ async function handleRegister() {
 
   try {
     await register({
-      username: registerForm.username,
+      email: registerForm.email.trim(),
       displayName: registerForm.displayName,
       password: registerForm.password,
       role: registerForm.role
@@ -116,18 +118,26 @@ async function handleRegister() {
         <form v-if="mode === 'login'" novalidate @submit.prevent="handleLogin">
           <div class="alert alert-danger py-2" v-if="loginError">{{ loginError }}</div>
           <div class="mb-3">
-            <label class="form-label">Username</label>
-            <input v-model="loginForm.username" type="text" class="form-control" />
+            <label for="login-email" class="form-label">Email</label>
+            <input
+              id="login-email"
+              v-model="loginForm.email"
+              type="email"
+              autocomplete="email"
+              class="form-control"
+            />
           </div>
           <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input v-model="loginForm.password" type="password" class="form-control" />
+            <label for="login-password" class="form-label">Password</label>
+            <input
+              id="login-password"
+              v-model="loginForm.password"
+              type="password"
+              autocomplete="current-password"
+              class="form-control"
+            />
           </div>
           <button type="submit" class="btn btn-gm-primary w-100">Login</button>
-          <p class="text-muted small mt-3 mb-0">
-            Demo accounts: <code>sarah.teacher / Teacher123</code> (Teacher)
-            or <code>priya.volunteer / Volunteer123</code> (Volunteer)
-          </p>
         </form>
 
         <form v-else novalidate @submit.prevent="handleRegister">
@@ -136,15 +146,17 @@ async function handleRegister() {
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Username</label>
+            <label for="register-email" class="form-label">Email</label>
             <input
-              v-model="registerForm.username"
-              type="text"
+              id="register-email"
+              v-model="registerForm.email"
+              type="email"
+              autocomplete="email"
               class="form-control"
-              :class="{ 'is-invalid': registerErrors.username }"
+              :class="{ 'is-invalid': registerErrors.email }"
             />
-            <div class="invalid-feedback" v-if="registerErrors.username">
-              {{ registerErrors.username }}
+            <div class="invalid-feedback" v-if="registerErrors.email">
+              {{ registerErrors.email }}
             </div>
           </div>
 

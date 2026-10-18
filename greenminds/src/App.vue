@@ -5,12 +5,12 @@ import HomePage from './components/HomePage.vue'
 import ResourcesPage from './components/ResourcesPage.vue'
 import ContactPage from './components/ContactPage.vue'
 import LoginPage from './components/LoginPage.vue'
-import { currentUser, restoreSession } from './composables/useAuth.js'
+import { currentUser, initAuth } from './composables/useAuth.js'
 
 const currentPage = ref('home')
 
 onMounted(() => {
-  restoreSession()
+  initAuth()
 })
 
 function navigate(page) {
