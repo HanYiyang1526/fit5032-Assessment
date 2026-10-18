@@ -8,6 +8,7 @@ import LoginPage from './components/LoginPage.vue'
 import DirectoryPage from './components/DirectoryPage.vue'
 import MapPage from './components/MapPage.vue'
 import AdminDashboard from './components/AdminDashboard.vue'
+import ApiDocsPage from './components/ApiDocsPage.vue'
 import { currentUser, initAuth } from './composables/useAuth.js'
 import DebugDemo from './components/debug-demo/DebugDemo.vue'
 
@@ -21,7 +22,8 @@ const PAGE_TITLES = {
   map: 'Event Map',
   contact: 'Contact',
   login: 'Login / Register',
-  admin: 'Admin Dashboard'
+  admin: 'Admin Dashboard',
+  api: 'Developer API'
 }
 
 onMounted(() => {
@@ -59,6 +61,7 @@ async function navigate(page) {
     <MapPage v-else-if="currentPage === 'map'" />
     <ContactPage v-else-if="currentPage === 'contact'" />
     <LoginPage v-else-if="currentPage === 'login'" @navigate="navigate" />
+    <ApiDocsPage v-else-if="currentPage === 'api'" />
     <AdminDashboard v-else-if="currentPage === 'admin' && currentUser?.role === 'Admin'" />
     <section v-else-if="currentPage === 'admin'" class="container my-5">
       <h1 class="h3">Admin Dashboard</h1>
@@ -69,6 +72,8 @@ async function navigate(page) {
   <footer class="bg-white border-top py-4 mt-5">
     <div class="container text-center text-muted small">
       &copy; 2026 GreenMinds Australia. All rights reserved.
+      <span aria-hidden="true">·</span>
+      <a href="#" class="link-secondary" @click.prevent="navigate('api')">Developer API</a>
     </div>
   </footer>
 </template>
