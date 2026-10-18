@@ -39,6 +39,20 @@ defineEmits(['navigate'])
           View Volunteer Opportunities
         </a>
       </template>
+      <template v-else-if="currentUser && currentUser.role === 'Admin'">
+        <h1 class="display-5 fw-bold">Welcome back, {{ currentUser.displayName }}</h1>
+        <p class="lead mt-3">
+          See how the GreenMinds community is growing and manage users from the
+          admin dashboard.
+        </p>
+        <a
+          href="#"
+          class="btn btn-light btn-lg mt-2"
+          @click.prevent="$emit('navigate', 'admin')"
+        >
+          Open Dashboard
+        </a>
+      </template>
       <template v-else>
         <h1 class="display-5 fw-bold">Climate education for every community</h1>
         <p class="lead mt-3">

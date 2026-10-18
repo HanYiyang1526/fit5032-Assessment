@@ -7,6 +7,7 @@ import ContactPage from './components/ContactPage.vue'
 import LoginPage from './components/LoginPage.vue'
 import DirectoryPage from './components/DirectoryPage.vue'
 import MapPage from './components/MapPage.vue'
+import AdminDashboard from './components/AdminDashboard.vue'
 import { currentUser, initAuth } from './composables/useAuth.js'
 import DebugDemo from './components/debug-demo/DebugDemo.vue'
 
@@ -19,7 +20,8 @@ const PAGE_TITLES = {
   directory: 'Events & Schools',
   map: 'Event Map',
   contact: 'Contact',
-  login: 'Login / Register'
+  login: 'Login / Register',
+  admin: 'Admin Dashboard'
 }
 
 onMounted(() => {
@@ -57,6 +59,11 @@ async function navigate(page) {
     <MapPage v-else-if="currentPage === 'map'" />
     <ContactPage v-else-if="currentPage === 'contact'" />
     <LoginPage v-else-if="currentPage === 'login'" @navigate="navigate" />
+    <AdminDashboard v-else-if="currentPage === 'admin' && currentUser?.role === 'Admin'" />
+    <section v-else-if="currentPage === 'admin'" class="container my-5">
+      <h1 class="h3">Admin Dashboard</h1>
+      <div class="alert alert-warning" role="alert">This page is only available to administrators.</div>
+    </section>
   </main>
 
   <footer class="bg-white border-top py-4 mt-5">

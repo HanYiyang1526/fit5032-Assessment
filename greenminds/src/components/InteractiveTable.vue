@@ -37,21 +37,32 @@ function clearFilters() {
   filters.value = buildFilters()
 }
 
-// The rows currently shown after search and sort (all pages), so exports
-// match what the user is looking at.
-const visibleRows = ref(props.rows)
+// Lets a parent filter one column from outside, e.g. clicking a chart.
+function setColumnFilter(field, value) {
+  filters.value[field].value = value
+}
+defineExpose({ setColumnFilter })
+
+// The rows currently shown after search and sort (all pages), read from
+// the DataTable at export time so exports match what the user sees even
+// when the data has changed (e.g. live Firestore updates).
+const table = ref(null)
+
+function visibleRows() {
+  return table.value?.processedData ?? props.rows
+}
 
 // BR (E.4) Export the current table view as CSV or PDF.
 const exportingPdf = ref(false)
 
 function exportCsv() {
-  downloadCsv(visibleRows.value, props.columns, `${props.exportName}.csv`)
+  downloadCsv(visibleRows(), props.columns, `${props.exportName}.csv`)
 }
 
 async function exportPdf() {
   exportingPdf.value = true
   try {
-    await downloadPdf(visibleRows.value, props.columns, {
+    await downloadPdf(visibleRows(), props.columns, {
       title: props.caption,
       filename: `${props.exportName}.pdf`
     })
@@ -69,10 +80,11 @@ async function emailCsv() {
   sending.value = true
   emailStatus.value = { type: '', text: '' }
   try {
-    const csv = toCsv(visibleRows.value, props.columns)
+    const rows = visibleRows()
+    const csv = toCsv(rows, props.columns)
     const result = await apiPost('/api/send-email', {
       subject: `GreenMinds: ${props.caption}`,
-      message: `Attached are the ${visibleRows.value.length} records you requested from "${props.caption}".`,
+      message: `Attached are the ${rows.length} records you requested from "${props.caption}".`,
       attachment: { filename: `${props.exportName}.csv`, content: toBase64(csv) }
     })
     emailStatus.value = { type: 'success', text: `Sent to ${result.sentTo}.` }
@@ -86,6 +98,7 @@ async function emailCsv() {
 
 <template>
   <DataTable
+    ref="table"
     v-model:filters="filters"
     :value="rows"
     :data-key="dataKey"
@@ -100,7 +113,6 @@ async function emailCsv() {
     :aria-label="caption"
     :pt="{ pcPaginator: { paginatorContainer: { 'aria-label': `${caption} pages` } } }"
     class="gm-table"
-    @value-change="(value) => (visibleRows = value)"
   >
     <template #header>
       <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">

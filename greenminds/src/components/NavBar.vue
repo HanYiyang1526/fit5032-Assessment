@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { logout } from '../composables/useAuth.js'
 
 const props = defineProps({
@@ -21,6 +22,14 @@ const navItems = [
   { key: 'map', label: 'Event Map' },
   { key: 'contact', label: 'Contact / Newsletter' }
 ]
+
+// The dashboard link is only shown to Admins (Firestore rules enforce
+// the actual access control).
+const visibleNavItems = computed(() =>
+  props.currentUser?.role === 'Admin'
+    ? [...navItems, { key: 'admin', label: 'Dashboard' }]
+    : navItems
+)
 
 function go(page) {
   emit('navigate', page)
@@ -51,7 +60,7 @@ async function handleLogout() {
       </button>
       <div class="collapse navbar-collapse" id="gmNavbar">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
-          <li class="nav-item" v-for="item in navItems" :key="item.key">
+          <li class="nav-item" v-for="item in visibleNavItems" :key="item.key">
             <a
               class="nav-link"
               :class="{ active: currentPage === item.key }"
