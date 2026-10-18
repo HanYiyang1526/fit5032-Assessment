@@ -7,6 +7,7 @@ import { FilterMatchMode } from '@primevue/core/api'
 import { currentUser } from '../composables/useAuth.js'
 import { apiPost } from '../services/api.js'
 import { toBase64, toCsv } from '../utils/csv.js'
+import { downloadCsv, downloadPdf } from '../utils/download.js'
 
 // BR (D.3) Interactive table data: every table built from this component
 // supports column sorting, a global search, a search box per column, and
@@ -39,6 +40,25 @@ function clearFilters() {
 // The rows currently shown after search and sort (all pages), so exports
 // match what the user is looking at.
 const visibleRows = ref(props.rows)
+
+// BR (E.4) Export the current table view as CSV or PDF.
+const exportingPdf = ref(false)
+
+function exportCsv() {
+  downloadCsv(visibleRows.value, props.columns, `${props.exportName}.csv`)
+}
+
+async function exportPdf() {
+  exportingPdf.value = true
+  try {
+    await downloadPdf(visibleRows.value, props.columns, {
+      title: props.caption,
+      filename: `${props.exportName}.pdf`
+    })
+  } finally {
+    exportingPdf.value = false
+  }
+}
 
 // BR (D.2) Email the current table view to the logged-in user as a CSV
 // attachment, via the /api/send-email serverless function (BR E.1).
@@ -84,7 +104,7 @@ async function emailCsv() {
     <template #header>
       <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
         <h3 class="h6 mb-0">{{ caption }}</h3>
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-wrap gap-2">
           <label :for="`${tableId}-global`" class="visually-hidden">
             Search all columns of {{ caption }}
           </label>
@@ -96,6 +116,17 @@ async function emailCsv() {
           />
           <button type="button" class="btn btn-sm btn-outline-secondary" @click="clearFilters">
             Clear
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" @click="exportCsv">
+            Download CSV
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            :disabled="exportingPdf"
+            @click="exportPdf"
+          >
+            {{ exportingPdf ? 'Preparing…' : 'Download PDF' }}
           </button>
           <button
             v-if="currentUser"
